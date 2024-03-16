@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> Task6_adminLinux
 # Task 1
 mkdir ~/myteam
 chmod 400 ~/myteam   # Read-only for the owner
