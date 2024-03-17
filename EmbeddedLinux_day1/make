@@ -1,0 +1,58 @@
+# Compiler options
+CC := gcc
+CFLAGS := -Wall -Werror -fpic
+
+# Directory paths
+SRC_DIR := src
+OBJ_DIR := obj
+LIB_DIR := lib
+
+# Source files
+SRCS := $(wildcard $(SRC_DIR)/*.c)
+OBJS := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
+
+# Output files
+STATIC_TARGET := calculator_static
+DYNAMIC_TARGET := calculator_dynamic
+STATIC_LIB := liboperation.a
+DYNAMIC_LIB := liboperation.so
+
+# Default target
+all: static dynamic
+
+# Static target
+static: $(STATIC_TARGET)
+
+# Dynamic target
+dynamic: $(DYNAMIC_TARGET)
+
+# Static executable
+$(STATIC_TARGET): $(OBJS) | $(LIB_DIR)
+	$(CC) -o $@ $^ -L$(LIB_DIR) -loperation -static
+
+# Dynamic executable
+$(DYNAMIC_TARGET): $(OBJS) | $(LIB_DIR)
+	$(CC) -o $@ $^ -L$(LIB_DIR) -loperation
+
+# Object files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+# Static library
+$(LIB_DIR)/$(STATIC_LIB): $(OBJS) | $(LIB_DIR)
+	ar rcs $@ $^
+
+# Dynamic library
+$(LIB_DIR)/$(DYNAMIC_LIB): $(OBJS) | $(LIB_DIR)
+	$(CC) -shared -o $@ $^
+
+# Create directories if they don't exist
+$(OBJ_DIR) $(LIB_DIR):
+	mkdir -p $@
+
+# Clean
+clean:
+	rm -rf $(OBJ_DIR) $(LIB_DIR) $(STATIC_TARGET) $(DYNAMIC_TARGET)
+
+.PHONY: all static dynamic clean
+
